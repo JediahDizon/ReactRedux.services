@@ -1,6 +1,7 @@
 const axios = require("axios");
 const _ = require("lodash");
-const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLString, GraphQLSchema } = require("graphql");
+const { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID, GraphQLBoolean, GraphQLString, GraphQLSchema } = require("graphql");
+const { firebase, database } = require("../../lib/services/firebase.js");
 
 
 const TaskType = new GraphQLObjectType({
@@ -9,7 +10,7 @@ const TaskType = new GraphQLObjectType({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
-    timestamp: { type: GraphQLString }
+    date: { type: GraphQLString }
   }
 });
 
@@ -18,19 +19,24 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     Task: {
       type: TaskType,
-			args: { id: { type: GraphQLID }},
+			args: { id: { type: new GraphQLNonNull(GraphQLID) }},
 			resolve(parentValue, args) {
-				return axios.get(`http://www.json-generator.com/api/json/get/cpEsqSStvm?indent=2`)
-					.then(response => response.data)
-					.then(response => response[_.findIndex(response, {id: args.id})]);
+				return database.child(args) || {};
 		}},
 		Tasks: {
 			type: new GraphQLList(TaskType),
 			resolve(parentValue, args) {
-				return axios.get(`http://www.json-generator.com/api/json/get/cpEsqSStvm?indent=2`)
-					.then(response => response.data)
-		}}
-}});
+				return database.once("value").then(dataSnapshot =>
+					Object.keys(dataSnapshot.val()).map(taskId =>
+						Object.assign({}, dataSnapshot.val()[taskId], { id: taskId })
+				)).catch(error => {
+					// LIKELY ERROR: Data not found.
+					return null;
+				});
+			}
+		}
+	}
+});
 
 const Mutation = new GraphQLObjectType({
 	name: "Mutation",
@@ -38,20 +44,24 @@ const Mutation = new GraphQLObjectType({
 		addTask: {
 			type: TaskType,
 			args: {
-				title: { type: GraphQLString },
+				title: { type: new GraphQLNonNull(GraphQLString) },
 				description: { type: GraphQLString },
-				timestamp: { type: GraphQLString }
+				date: { type: new GraphQLNonNull(GraphQLString) }
 			},
-			resolve() {
-				// POST
+			resolve(parentValue, args) {
+				return database.push(args).then(() => Object.assign({}, args));
 			}
 		},
-		deleteTask: {
+		removeTask: {
 			type: TaskType,
-			args: { id: { type: new GraphQLNonNull(GraphQLID) } },
-			resolve() {
-				// POST
-	}}}
+			args: {
+				id: { type: new GraphQLNonNull(GraphQLString) }
+			},
+			resolve(parentValue, args) {
+				return database.child(args.id).remove().then(() => Object.assign({}));
+			}
+		}
+	}
 });
 
 module.exports = new GraphQLSchema({

@@ -1,0 +1,33 @@
+{
+  "name": "reactredux.services",
+  "version": "1.0.0",
+  "description": "Services offered by ReactRedux project by Jediah Dizon.",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "cors": "^2.8.4",
+    "express": "^4.15.4",
+    "express-graphql": "^0.6.11",
+    "firebase": "^4.4.0",
+    "graphql": "^0.11.3",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JediahDizon/ReactRedux.services.git"
+  },
+  "author": "Jediah Dizon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JediahDizon/ReactRedux.services/issues"
+  },
+  "homepage": "https://github.com/JediahDizon/ReactRedux.services#readme"
+}
