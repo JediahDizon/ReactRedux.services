@@ -48,7 +48,18 @@ const Mutation = new GraphQLObjectType({
 				date: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
+<<<<<<< HEAD
 				return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, { params: args }).then(response => response.data);
+=======
+				return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`,
+        {
+          params: {
+            title: args.title,
+            description: args.description,
+            date: args.date
+          }
+        }).then(response => response.data);
+>>>>>>> 370fd08db5ffa0c8708abea41c8e97531350d81f
 			}
 		},
 		removeTask: {
@@ -57,7 +68,16 @@ const Mutation = new GraphQLObjectType({
 				id: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
+<<<<<<< HEAD
 				return axios.delete(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, { params: args }).then(response => response.data);
+=======
+				return axios.delete(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`,
+      {
+        params: {
+          id: args.id
+        }
+      }).then(response => response.data);
+>>>>>>> 370fd08db5ffa0c8708abea41c8e97531350d81f
 			}
 		}
 	}
