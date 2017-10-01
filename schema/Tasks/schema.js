@@ -48,7 +48,6 @@ const Mutation = new GraphQLObjectType({
 				date: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
-        console.log(args);
 				return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, { params: args }).then(response => response.data);
 			}
 		},
