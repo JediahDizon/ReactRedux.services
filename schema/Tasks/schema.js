@@ -10,7 +10,7 @@ const TaskType = new GraphQLObjectType({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
-    date: { type: GraphQLString }
+    timestamp: { type: GraphQLString }
   }
 });
 
@@ -45,7 +45,7 @@ const Mutation = new GraphQLObjectType({
 			args: {
 				title: { type: new GraphQLNonNull(GraphQLString) },
 				description: { type: GraphQLString },
-				date: { type: new GraphQLNonNull(GraphQLString) }
+				timestamp: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
         return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, args).then(response => response.data);
