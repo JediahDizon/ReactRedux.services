@@ -48,7 +48,7 @@ const Mutation = new GraphQLObjectType({
 				date: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
-				return database.push(args).then(() => Object.assign({}, args));
+				return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, { params: args }).then(response => response.data);
 			}
 		},
 		removeTask: {
@@ -57,7 +57,7 @@ const Mutation = new GraphQLObjectType({
 				id: { type: new GraphQLNonNull(GraphQLString) }
 			},
 			resolve(parentValue, args) {
-				return database.child(args.id).remove().then(() => Object.assign({}));
+				return axios.delete(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, { params: args }).then(response => response.data);
 			}
 		}
 	}
