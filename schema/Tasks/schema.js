@@ -21,18 +21,17 @@ const RootQuery = new GraphQLObjectType({
       type: TaskType,
 			args: { id: { type: new GraphQLNonNull(GraphQLID) }},
 			resolve(parentValue, args) {
-				return database.child(args) || {};
+				return axios.get(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`,
+				{
+					params: {
+						id: args.id
+					}
+				}).then(response => response.data);
 		}},
 		Tasks: {
 			type: new GraphQLList(TaskType),
 			resolve(parentValue, args) {
-				return database.once("value").then(dataSnapshot =>
-					Object.keys(dataSnapshot.val()).map(taskId =>
-						Object.assign({}, dataSnapshot.val()[taskId], { id: taskId })
-				)).catch(error => {
-					// LIKELY ERROR: Data not found.
-					return null;
-				});
+				return axios.get(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`).then(response => response.data);
 			}
 		}
 	}

@@ -24,8 +24,8 @@ app.get('/', function (req, res) {
 // --------------------
 // LISTENER
 // --------------------
-const PORT = process.env.PORT || 4000;
-const HOST = process.env.HOST || "192.168.0.100";
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "192.168.0.103";
 app.listen(PORT, HOST, 300, () => {
   console.log(`----------\nPORT: ${PORT}\nHOST: ${HOST}\n----------`)
 });
