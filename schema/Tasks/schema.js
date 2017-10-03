@@ -20,21 +20,20 @@ const RootQuery = new GraphQLObjectType({
     Task: {
       type: TaskType,
 			args: { id: { type: new GraphQLNonNull(GraphQLID) }},
-			resolve(parentValue, args) {
-				return axios.get(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`,
-				{
-					params: {
-						id: args.id
-					}
-				}).then(response => response.data);
+      resolve(parentValue, args) {
+				return database.child(args) || {};
 		}},
-		Tasks: {
+    Tasks: {
 			type: new GraphQLList(TaskType),
 			resolve(parentValue, args) {
-				return axios.get(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`).then(response => response.data);
-			}
-		}
-	}
+				return database.once("value").then(dataSnapshot =>
+					Object.keys(dataSnapshot.val()).map(taskId =>
+						Object.assign({}, dataSnapshot.val()[taskId], { id: taskId })
+				)).catch(error => {
+					// LIKELY ERROR: Data not found.
+					return null;
+				});
+  }}}
 });
 
 const Mutation = new GraphQLObjectType({
@@ -47,8 +46,8 @@ const Mutation = new GraphQLObjectType({
 				description: { type: GraphQLString },
 				timestamp: { type: new GraphQLNonNull(GraphQLString) }
 			},
-			resolve(parentValue, args) {
-        return axios.put(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, args).then(response => response.data);
+      resolve(parentValue, args) {
+				return database.push(args).then(() => Object.assign({}, args));
 			}
 		},
 		removeTask: {
@@ -56,8 +55,8 @@ const Mutation = new GraphQLObjectType({
 			args: {
 				id: { type: new GraphQLNonNull(GraphQLString) }
 			},
-			resolve(parentValue, args) {
-				return axios.delete(`http://${process.env.HOST || "192.168.0.103"}:4000/Goals`, args).then(response => response.data);
+      resolve(parentValue, args) {
+				return database.child(args.id).remove().then(() => Object.assign({}));
 			}
 		}
 	}
